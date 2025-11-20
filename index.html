@@ -37,7 +37,23 @@
             This array shows <span id="hint-rows">4</span> rows of
             <span id="hint-cols">3</span> tiles.
           </p>
-          <div id="grid-container"></div>
+
+          <div class="fact-line">
+            <div class="fact-equation">
+              <span id="fact-rows">4</span> rows ×
+              <span id="fact-cols">3</span> each =
+              <span id="fact-product">?</span>
+            </div>
+            <div class="fact-note" id="fact-note">
+              Build the array, then count rows × columns.
+            </div>
+          </div>
+
+          <div class="grid-shell" id="grid-shell">
+            <div class="ruler ruler-top" id="ruler-top"></div>
+            <div class="ruler ruler-left" id="ruler-left"></div>
+            <div id="grid-container"></div>
+          </div>
         </section>
 
         <section class="controls-section">
@@ -57,6 +73,13 @@
               <span id="cols-label">3</span>
             </label>
             <input id="cols-slider" type="range" min="1" max="12" value="3" />
+          </div>
+
+          <div class="checklist">
+            <div class="check-step" id="step-rows">1) Choose rows</div>
+            <div class="check-step" id="step-cols">2) Choose columns</div>
+            <div class="check-step" id="step-count">3) Count rows × columns</div>
+            <div class="check-step" id="step-answer">4) Enter the product</div>
           </div>
 
           <div class="answer-section">
