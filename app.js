@@ -1,6 +1,6 @@
 // Multiply Monsters - array model + keypad + feedback
 
-const gridContainer = document.getElementById("grid-container");
+const gridTable = document.getElementById("grid-table");
 const rowsLabel = document.getElementById("rows-label");
 const colsLabel = document.getElementById("cols-label");
 
@@ -15,8 +15,6 @@ const factRows = document.getElementById("fact-rows");
 const factCols = document.getElementById("fact-cols");
 const factProduct = document.getElementById("fact-product");
 const factNote = document.getElementById("fact-note");
-const rulerTop = document.getElementById("ruler-top");
-const rulerLeft = document.getElementById("ruler-left");
 const gridShell = document.getElementById("grid-shell");
 
 const stepRows = document.getElementById("step-rows");
@@ -29,6 +27,7 @@ const newProblemBtn = document.getElementById("new-problem-btn");
 // Answer / keypad
 const answerValueSpan = document.getElementById("answer-value");
 const keypadButtons = document.querySelectorAll(".key-btn");
+const clearAnswerBtn = document.getElementById("clear-answer-btn");
 const checkAnswerBtn = document.getElementById("check-answer-btn");
 const feedbackEl = document.getElementById("feedback");
 
@@ -36,6 +35,11 @@ const feedbackEl = document.getElementById("feedback");
 const scoreCorrectSpan = document.getElementById("score-correct");
 const scoreStreakSpan = document.getElementById("score-streak");
 const monsterFace = document.getElementById("monster-face");
+
+const MIN_ROWS = 8;
+const MAX_ROWS = 13;
+const MIN_COLS = 8;
+const MAX_COLS = 10;
 
 let currentRows = 0;
 let currentCols = 0;
@@ -52,28 +56,6 @@ function getProduct() {
   return currentRows * currentCols;
 }
 
-function updateRulers(rows, cols) {
-  rulerTop.innerHTML = "";
-  rulerLeft.innerHTML = "";
-
-  rulerTop.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  rulerLeft.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-  for (let c = 1; c <= cols; c += 1) {
-    const mark = document.createElement("div");
-    mark.className = "mark";
-    mark.textContent = c;
-    rulerTop.appendChild(mark);
-  }
-
-  for (let r = 1; r <= rows; r += 1) {
-    const mark = document.createElement("div");
-    mark.className = "mark";
-    mark.textContent = r;
-    rulerLeft.appendChild(mark);
-  }
-}
-
 function updateStatsDisplay() {
   scoreCorrectSpan.textContent = scoreCorrect;
   scoreStreakSpan.textContent = scoreStreak;
@@ -84,6 +66,15 @@ function updateFactLine(showProduct) {
   factCols.textContent = currentCols;
   factProduct.textContent = showProduct ? getProduct() : "?";
   factProduct.classList.toggle("revealed", Boolean(showProduct));
+}
+
+function setCellSizing(rows, cols) {
+  const maxDim = Math.max(rows, cols);
+  const ideal = Math.floor(520 / (maxDim + 1));
+  const size = Math.max(32, Math.min(64, ideal));
+  const spacing = Math.max(4, Math.min(10, Math.floor(size / 8)));
+  gridTable.style.setProperty("--cell-size", `${size}px`);
+  gridTable.style.borderSpacing = `${spacing}px`;
 }
 
 function updateChecklist() {
@@ -141,13 +132,13 @@ function updateAnswerDisplay() {
 }
 
 function clearHighlights() {
-  gridContainer.querySelectorAll(".grid-tile").forEach((t) => {
+  gridTable.querySelectorAll(".grid-tile").forEach((t) => {
     t.classList.remove("row-lit", "col-lit");
   });
 }
 
 function highlightRowCol(row, col) {
-  gridContainer.querySelectorAll(".grid-tile").forEach((t) => {
+  gridTable.querySelectorAll(".grid-tile").forEach((t) => {
     const tRow = parseInt(t.dataset.row || "0", 10);
     const tCol = parseInt(t.dataset.col || "0", 10);
     t.classList.toggle("row-lit", tRow === row);
@@ -183,70 +174,95 @@ function updateProblemDisplay(showProduct = false) {
 }
 
 function renderGrid(rows, cols) {
-  gridContainer.innerHTML = "";
-  updateRulers(rows, cols);
+  gridTable.innerHTML = "";
+  setCellSizing(rows, cols);
 
-  gridContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-  gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-  const total = rows * cols;
-
-  for (let i = 0; i < total; i += 1) {
-    const rowIndex = Math.floor(i / cols) + 1;
-    const colIndex = (i % cols) + 1;
-
-    const tile = document.createElement("div");
-    tile.className = "grid-tile";
-    tile.dataset.row = rowIndex.toString();
-    tile.dataset.col = colIndex.toString();
-    // Give each tile its own hue so the grid feels playful and varied.
-    const hue = Math.floor(Math.random() * 360);
-    tile.style.setProperty("--hue", hue.toString());
-
-    const toggle = () => {
-      tile.classList.toggle("on");
-      countedGrid = true;
-      updateChecklist();
-    };
-
-    tile.addEventListener("click", () => {
-      toggle();
-      highlightRowCol(rowIndex, colIndex);
-    });
-    tile.addEventListener(
-      "touchstart",
-      (ev) => {
-        ev.preventDefault();
-        toggle();
-        highlightRowCol(rowIndex, colIndex);
-      },
-      { passive: false }
-    );
-
-    tile.addEventListener(
-      "mouseenter",
-      () => {
-        highlightRowCol(rowIndex, colIndex);
-      },
-      { passive: true }
-    );
-
-    tile.addEventListener(
-      "mouseleave",
-      () => {
-        clearHighlights();
-      },
-      { passive: true }
-    );
-
-    gridContainer.appendChild(tile);
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  const corner = document.createElement("th");
+  corner.className = "corner-cell";
+  headRow.appendChild(corner);
+  for (let c = 1; c <= cols; c += 1) {
+    const th = document.createElement("th");
+    th.className = "col-label";
+    th.textContent = c;
+    headRow.appendChild(th);
   }
+  thead.appendChild(headRow);
+  gridTable.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  for (let r = 1; r <= rows; r += 1) {
+    const tr = document.createElement("tr");
+
+    const rowTh = document.createElement("th");
+    rowTh.className = "row-label";
+    rowTh.textContent = r;
+    tr.appendChild(rowTh);
+
+    for (let c = 1; c <= cols; c += 1) {
+      const td = document.createElement("td");
+      const tile = document.createElement("div");
+      tile.className = "grid-tile";
+      tile.dataset.row = r.toString();
+      tile.dataset.col = c.toString();
+      // Give each tile its own hue so the grid feels playful and varied.
+      const hue = Math.floor(Math.random() * 360);
+      tile.style.setProperty("--hue", hue.toString());
+
+      const toggle = () => {
+        tile.classList.toggle("on");
+        countedGrid = true;
+        updateChecklist();
+      };
+
+      tile.addEventListener("click", () => {
+        toggle();
+        highlightRowCol(r, c);
+      });
+      tile.addEventListener(
+        "touchstart",
+        (ev) => {
+          ev.preventDefault();
+          toggle();
+          highlightRowCol(r, c);
+        },
+        { passive: false }
+      );
+
+      tile.addEventListener(
+        "mouseenter",
+        () => {
+          highlightRowCol(r, c);
+        },
+        { passive: true }
+      );
+
+      tile.addEventListener(
+        "mouseleave",
+        () => {
+          clearHighlights();
+        },
+        { passive: true }
+      );
+
+      td.appendChild(tile);
+      tr.appendChild(td);
+    }
+
+    tbody.appendChild(tr);
+  }
+
+  gridTable.appendChild(tbody);
 }
 
 function randomProblem() {
   // Keep the numbers reasonable for middle school practice.
-  currentRows = 2 + Math.floor(Math.random() * 10); // 2-11
-  currentCols = 2 + Math.floor(Math.random() * 10); // 2-11
+  currentRows =
+    MIN_ROWS + Math.floor(Math.random() * (MAX_ROWS - MIN_ROWS + 1));
+  currentCols =
+    MIN_COLS + Math.floor(Math.random() * (MAX_COLS - MIN_COLS + 1));
 
   touchedRows = true;
   touchedCols = true;
@@ -287,10 +303,6 @@ keypadButtons.forEach((btn) => {
           updateAnswerDisplay();
           updateChecklist();
         }
-      } else if (action === "clear") {
-        currentAnswer = "";
-        updateAnswerDisplay();
-        updateChecklist();
       } else if (action === "back") {
         if (currentAnswer.length > 0) {
           currentAnswer = currentAnswer.slice(0, -1);
@@ -302,6 +314,14 @@ keypadButtons.forEach((btn) => {
     { passive: true }
   );
 });
+
+const clearAnswer = () => {
+  currentAnswer = "";
+  updateAnswerDisplay();
+  updateChecklist();
+};
+
+clearAnswerBtn.addEventListener("click", clearAnswer);
 
 checkAnswerBtn.addEventListener("click", () => {
   if (!currentAnswer) {

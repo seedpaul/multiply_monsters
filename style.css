@@ -54,8 +54,8 @@ body {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
 }
 
 .problem-display span {
@@ -132,6 +132,19 @@ button {
   box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
 }
 
+.ghost-btn {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(148, 163, 184, 0.08);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ghost-btn:active {
+  transform: translateY(1px);
+}
+
 /* Layout */
 
 .main-layout {
@@ -167,6 +180,11 @@ button {
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--text);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 #fact-product {
@@ -192,46 +210,16 @@ button {
 
 .grid-shell {
   position: relative;
-  padding-left: 42px;
-  padding-top: 28px;
+  padding: 12px;
+  background: radial-gradient(circle at top, #111827, #020617);
+  border-radius: var(--radius-xl);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2),
+    0 18px 40px rgba(0, 0, 0, 0.5);
+  overflow: auto;
 }
 
 .grid-shell.flash {
   animation: outline 420ms ease;
-}
-
-.ruler {
-  position: absolute;
-  color: var(--muted);
-  font-size: 0.78rem;
-  display: grid;
-  gap: 6px;
-}
-
-.ruler-top {
-  left: 42px;
-  right: 0;
-  top: 0;
-  height: 24px;
-  align-items: center;
-}
-
-.ruler-left {
-  top: 28px;
-  bottom: 0;
-  left: 0;
-  width: 36px;
-  align-content: center;
-}
-
-.ruler .mark {
-  text-align: center;
-  padding: 2px 0;
-  color: var(--muted);
-  background: rgba(148, 163, 184, 0.08);
-  border-radius: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  font-weight: 600;
 }
 
 .section-title {
@@ -259,21 +247,53 @@ button {
 
 /* Grid */
 
-#grid-container {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: radial-gradient(circle at top, #111827, #020617);
-  border-radius: var(--radius-xl);
-  padding: 12px;
-  display: grid;
-  gap: 6px;
+#grid-table {
+  --cell-size: 44px;
+  width: max-content;
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  table-layout: fixed;
   touch-action: manipulation;
+}
+
+#grid-table th {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  padding: 6px 4px;
+}
+
+.corner-cell {
+  background: transparent;
+  border: none;
+}
+
+.row-label {
+  width: var(--cell-size);
+}
+
+.col-label {
+  height: var(--cell-size);
+}
+
+#grid-table td {
+  padding: 0;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  vertical-align: middle;
   position: relative;
-  z-index: 1;
 }
 
 .grid-tile {
   --hue: 190;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 12px;
   background: linear-gradient(
     135deg,
@@ -408,6 +428,14 @@ button {
 .key-btn:active {
   transform: translateY(1px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.answer-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .checklist {

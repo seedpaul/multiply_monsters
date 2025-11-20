@@ -11,7 +11,7 @@
       <header class="top-bar">
         <div class="problem-display">
           <span id="factor-a">4</span>
-          <span class="multiply-symbol">×</span>
+          <span class="multiply-symbol">x</span>
           <span id="factor-b">3</span>
           <span>=</span>
           <span id="product">?</span>
@@ -40,19 +40,17 @@
 
           <div class="fact-line">
             <div class="fact-equation">
-              <span id="fact-rows">4</span> rows ×
+              <span id="fact-rows">4</span> rows x
               <span id="fact-cols">3</span> each =
               <span id="fact-product">?</span>
             </div>
             <div class="fact-note" id="fact-note">
-              Build the array, then count rows × columns.
+              Build the array, then count rows x columns.
             </div>
           </div>
 
           <div class="grid-shell" id="grid-shell">
-            <div class="ruler ruler-top" id="ruler-top"></div>
-            <div class="ruler ruler-left" id="ruler-left"></div>
-            <div id="grid-container"></div>
+            <table id="grid-table" aria-label="Multiplication array"></table>
           </div>
         </section>
 
@@ -60,14 +58,14 @@
           <h2 class="section-title">Build the fact</h2>
 
           <div class="problem-recap">
-            Current array: <span id="rows-label">4</span> rows ×
+            Current array: <span id="rows-label">4</span> rows x
             <span id="cols-label">3</span> each
           </div>
 
           <div class="checklist">
             <div class="check-step" id="step-rows">1) Notice the rows</div>
             <div class="check-step" id="step-cols">2) Notice the columns</div>
-            <div class="check-step" id="step-count">3) Count rows × columns</div>
+            <div class="check-step" id="step-count">3) Count rows x columns</div>
             <div class="check-step" id="step-answer">4) Enter the product</div>
           </div>
 
@@ -90,12 +88,16 @@
               <button class="key-btn" data-key="9">9</button>
               <button class="key-btn wide" data-key="0">0</button>
               <button class="key-btn" data-action="back">⌫</button>
-              <button class="key-btn" data-action="clear">Clear</button>
             </div>
 
-            <button id="check-answer-btn" class="primary-btn">
-              Check Answer
-            </button>
+            <div class="answer-actions">
+              <button id="clear-answer-btn" class="ghost-btn">
+                Clear answer
+              </button>
+              <button id="check-answer-btn" class="primary-btn">
+                Check Answer
+              </button>
+            </div>
 
             <p id="feedback" class="feedback feedback-neutral">
               Tap the tiles, then type the total number of tiles.

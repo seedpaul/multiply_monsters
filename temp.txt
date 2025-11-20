@@ -1,0 +1,13 @@
+﻿  cursor: pointer;
+  cursor: pointer;
+.grid-tile {
+  cursor: pointer;
+.grid-tile::after {
+.grid-tile.row-lit,
+.grid-tile.col-lit {
+.grid-tile.row-lit::after,
+.grid-tile.col-lit::after {
+.grid-tile.row-lit.col-lit {
+.grid-tile.on {
+.grid-tile.on::after {
+  cursor: pointer;
