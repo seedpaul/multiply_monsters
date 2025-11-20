@@ -30,15 +30,19 @@ const keypadButtons = document.querySelectorAll(".key-btn");
 const clearAnswerBtn = document.getElementById("clear-answer-btn");
 const checkAnswerBtn = document.getElementById("check-answer-btn");
 const feedbackEl = document.getElementById("feedback");
+const feedbackOverlay = document.getElementById("feedback-overlay");
+const feedbackModal = document.getElementById("feedback-modal");
+const feedbackBody = document.getElementById("feedback-body");
+const feedbackOk = document.getElementById("feedback-ok");
 
 // Score / monster
 const scoreCorrectSpan = document.getElementById("score-correct");
 const scoreStreakSpan = document.getElementById("score-streak");
 const monsterFace = document.getElementById("monster-face");
 
-const MIN_ROWS = 8;
-const MAX_ROWS = 13;
-const MIN_COLS = 8;
+const MIN_ROWS = 1;
+const MAX_ROWS = 10;
+const MIN_COLS = 1;
 const MAX_COLS = 10;
 
 let currentRows = 0;
@@ -69,12 +73,26 @@ function updateFactLine(showProduct) {
 }
 
 function setCellSizing(rows, cols) {
+  const shellRect = gridShell?.getBoundingClientRect();
+  const availableWidth =
+    shellRect && shellRect.width ? shellRect.width - 16 : 520;
+  const availableHeight =
+    shellRect && shellRect.top
+      ? Math.max(180, window.innerHeight - shellRect.top - 80)
+      : window.innerHeight * 0.6;
+
   const maxDim = Math.max(rows, cols);
-  const ideal = Math.floor(520 / (maxDim + 1));
-  const size = Math.max(32, Math.min(64, ideal));
-  const spacing = Math.max(4, Math.min(10, Math.floor(size / 8)));
+  const idealByWidth = Math.floor(availableWidth / (cols + 1));
+  const idealByHeight = Math.floor(availableHeight / (rows + 1));
+  const ideal = Math.min(idealByWidth, idealByHeight);
+
+  const size = Math.max(18, Math.min(56, ideal));
+  const spacing = Math.max(3, Math.min(8, Math.floor(size / 9)));
+
   gridTable.style.setProperty("--cell-size", `${size}px`);
   gridTable.style.borderSpacing = `${spacing}px`;
+  gridTable.style.width = "100%";
+  gridTable.style.minWidth = "0";
 }
 
 function updateChecklist() {
@@ -95,31 +113,43 @@ function updateChecklist() {
 }
 
 function setFeedback(message, state) {
-  feedbackEl.textContent = message;
+  feedbackEl.textContent = state === "neutral" ? message : "";
 
   feedbackEl.classList.remove(
     "feedback-neutral",
     "feedback-correct",
-    "feedback-incorrect"
+    "feedback-incorrect",
+    "feedback-hidden"
   );
   monsterFace.classList.remove("happy", "sad");
   factProduct.classList.remove("revealed");
+  feedbackModal.classList.remove("modal-correct", "modal-incorrect");
 
   if (state === "correct") {
-    feedbackEl.classList.add("feedback-correct");
+    feedbackEl.classList.add("feedback-correct", "feedback-hidden");
     monsterFace.textContent = ":)";
     monsterFace.classList.add("happy");
     factNote.textContent = "Nice! Rows x columns made the product.";
+    feedbackModal.classList.add("modal-correct");
+    showFeedbackDialog(
+      "Thunderous win! You multiplied rows x columns to get the product. Keep the streak going!"
+    );
+    playThunder();
   } else if (state === "incorrect") {
-    feedbackEl.classList.add("feedback-incorrect");
+    feedbackEl.classList.add("feedback-incorrect", "feedback-hidden");
     monsterFace.textContent = ":(";
     monsterFace.classList.add("sad");
     factNote.textContent =
       "Look at the rows and columns, then try rows x columns again.";
+    feedbackModal.classList.add("modal-incorrect");
+    showFeedbackDialog(
+      `That answer doesn't match this array. Remember: it's ${currentRows} rows of ${currentCols}; count rows x columns to find the total.`
+    );
   } else {
     feedbackEl.classList.add("feedback-neutral");
     monsterFace.textContent = ":|";
     factNote.textContent = "Build the array, then count rows x columns.";
+    hideFeedbackDialog();
   }
 }
 
@@ -154,6 +184,55 @@ function resetForNewShape() {
   updateAnswerDisplay();
   updateFactLine(false);
   clearHighlights();
+}
+
+function showFeedbackDialog(text) {
+  feedbackBody.textContent = text;
+  feedbackOverlay.classList.remove("hidden");
+  feedbackOverlay.classList.add("visible");
+  feedbackModal.classList.remove("hidden");
+  feedbackModal.classList.add("visible");
+}
+
+function hideFeedbackDialog() {
+  feedbackOverlay.classList.add("hidden");
+  feedbackOverlay.classList.remove("visible");
+  feedbackModal.classList.add("hidden");
+  feedbackModal.classList.remove("visible");
+}
+
+function playThunder() {
+  if (!window.AudioContext && !window.webkitAudioContext) return;
+  const Actx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Actx();
+  const osc = ctx.createOscillator();
+  const chime = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const master = ctx.createGain();
+
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(220, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.7);
+
+  chime.type = "sine";
+  chime.frequency.setValueAtTime(660, ctx.currentTime + 0.05);
+  chime.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.6);
+
+  gain.gain.setValueAtTime(0.001, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.08);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.9);
+
+  master.gain.setValueAtTime(0.6, ctx.currentTime);
+  master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.05);
+
+  osc.connect(gain);
+  chime.connect(gain);
+  gain.connect(master);
+  master.connect(ctx.destination);
+  osc.start();
+  chime.start();
+  osc.stop(ctx.currentTime + 1.1);
+  chime.stop(ctx.currentTime + 1.1);
 }
 
 /* Core UI updates */
@@ -282,6 +361,14 @@ newProblemBtn.addEventListener("click", () => {
   randomProblem();
 });
 
+feedbackOk.addEventListener("click", hideFeedbackDialog);
+feedbackOverlay.addEventListener("click", hideFeedbackDialog);
+feedbackOk.addEventListener("click", () => {
+  if (feedbackModal.classList.contains("modal-correct")) {
+    randomProblem();
+  }
+});
+
 /* Keypad handling */
 
 keypadButtons.forEach((btn) => {
@@ -346,11 +433,7 @@ checkAnswerBtn.addEventListener("click", () => {
     productSpan.textContent = expected.toString();
     updateFactLine(true);
     updateChecklist();
-
-    // Auto-advance to a new problem after a short delay.
-    setTimeout(() => {
-      randomProblem();
-    }, 900);
+    feedbackOk.textContent = "Next question";
   } else {
     scoreStreak = 0;
     updateStatsDisplay();
@@ -358,6 +441,7 @@ checkAnswerBtn.addEventListener("click", () => {
       `Not quite. Try counting the tiles again - remember it's ${currentRows} rows of ${currentCols}.`,
       "incorrect"
     );
+    feedbackOk.textContent = "Got it";
     gridShell.classList.remove("flash");
     void gridShell.offsetWidth;
     gridShell.classList.add("flash");

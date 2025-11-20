@@ -34,6 +34,7 @@ body {
   width: 100%;
   max-width: 960px;
   padding: 16px;
+  margin: 0 auto;
 }
 
 /* Top bar */
@@ -216,6 +217,7 @@ button {
   box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2),
     0 18px 40px rgba(0, 0, 0, 0.5);
   overflow: auto;
+  max-height: 70vh;
 }
 
 .grid-shell.flash {
@@ -249,7 +251,7 @@ button {
 
 #grid-table {
   --cell-size: 44px;
-  width: max-content;
+  width: auto;
   max-width: 100%;
   border-collapse: separate;
   border-spacing: 6px;
@@ -438,6 +440,54 @@ button {
   margin-top: 6px;
 }
 
+@media (max-width: 640px) {
+  #app {
+    padding: 10px;
+  }
+
+  .top-bar {
+    grid-template-columns: 1fr;
+    row-gap: 8px;
+  }
+
+  .problem-display {
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  .main-layout {
+    flex-direction: column;
+  }
+
+  .grid-section,
+  .controls-section {
+    padding: 12px;
+  }
+
+  .fact-line {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grid-shell {
+    padding: 8px;
+    max-height: none;
+  }
+
+  #grid-table {
+    border-spacing: 4px;
+  }
+
+  .keypad {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .answer-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
 .checklist {
   margin: 8px 0 10px;
   display: grid;
@@ -473,6 +523,10 @@ button {
   padding: 6px 8px;
 }
 
+.feedback-hidden {
+  display: none;
+}
+
 .feedback-neutral {
   background: transparent;
   color: var(--muted);
@@ -486,6 +540,112 @@ button {
 .feedback-incorrect {
   background: rgba(248, 113, 113, 0.18);
   color: #fecaca;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  transition: opacity 150ms ease;
+  display: block;
+  padding: 16px;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  max-width: 360px;
+  width: min(92vw, 360px);
+  max-height: 70vh;
+  background: #0b1220;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(56, 189, 248, 0.25);
+  z-index: 510;
+  transform: translate(-50%, -50%) scale(0.98);
+  transition: transform 140ms ease, opacity 140ms ease;
+  overflow: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.close-btn {
+  padding: 4px 10px;
+  font-size: 1.1rem;
+}
+
+.modal-body {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  padding: 6px 0 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-correct {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(56, 189, 248, 0.3);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), #0b1220);
+}
+
+.modal-incorrect {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(248, 113, 113, 0.3);
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  display: none;
+}
+
+.overlay.visible {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.modal.visible {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+
+@keyframes pulse-bolt {
+  0% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
 }
 
 @keyframes pop {

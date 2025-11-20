@@ -107,6 +107,23 @@
       </main>
     </div>
 
+    <div id="feedback-overlay" class="overlay hidden" role="presentation"></div>
+    <div
+      id="feedback-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="feedback-title"
+      aria-describedby="feedback-body"
+    >
+      <div class="modal-header">
+        <div id="feedback-title">Feedback</div>
+      </div>
+      <div id="feedback-body" class="modal-body"></div>
+      <div class="modal-actions">
+        <button id="feedback-ok" class="primary-btn">Got it</button>
+      </div>
+    </div>
+
     <script type="module" src="app.js"></script>
   </body>
 </html>
