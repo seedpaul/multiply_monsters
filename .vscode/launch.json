@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "Launch Chrome against IIS site",
+      "url": "http://localhost:124/",
+      "webRoot": "C:/Users/pauls/Desktop/multiply_monsters"
+    }
+  ]
+}
