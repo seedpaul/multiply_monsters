@@ -1,8 +1,6 @@
 // Multiply Monsters - array model + keypad + feedback
 
 const gridContainer = document.getElementById("grid-container");
-const rowsSlider = document.getElementById("rows-slider");
-const colsSlider = document.getElementById("cols-slider");
 const rowsLabel = document.getElementById("rows-label");
 const colsLabel = document.getElementById("cols-label");
 
@@ -39,8 +37,8 @@ const scoreCorrectSpan = document.getElementById("score-correct");
 const scoreStreakSpan = document.getElementById("score-streak");
 const monsterFace = document.getElementById("monster-face");
 
-let currentRows = parseInt(rowsSlider.value, 10);
-let currentCols = parseInt(colsSlider.value, 10);
+let currentRows = 0;
+let currentCols = 0;
 let currentAnswer = "";
 let scoreCorrect = 0;
 let scoreStreak = 0;
@@ -165,7 +163,6 @@ function resetForNewShape() {
   updateAnswerDisplay();
   updateFactLine(false);
   clearHighlights();
-  updateChecklist();
 }
 
 /* Core UI updates */
@@ -251,14 +248,11 @@ function randomProblem() {
   currentRows = 2 + Math.floor(Math.random() * 10); // 2-11
   currentCols = 2 + Math.floor(Math.random() * 10); // 2-11
 
-  rowsSlider.value = currentRows;
-  colsSlider.value = currentCols;
-
-  touchedRows = false;
-  touchedCols = false;
+  touchedRows = true;
+  touchedCols = true;
   resetForNewShape();
   setFeedback(
-    "Tap the tiles to see the array, then type how many tiles there are in total.",
+    "Study the rows and columns, then type how many tiles there are in total.",
     "neutral"
   );
   updateProblemDisplay();
@@ -267,32 +261,6 @@ function randomProblem() {
 }
 
 /* Events */
-
-rowsSlider.addEventListener("input", () => {
-  currentRows = parseInt(rowsSlider.value, 10);
-  touchedRows = true;
-  resetForNewShape();
-  setFeedback(
-    "Adjust rows and columns, then build the array and count.",
-    "neutral"
-  );
-  updateProblemDisplay();
-  renderGrid(currentRows, currentCols);
-  updateChecklist();
-});
-
-colsSlider.addEventListener("input", () => {
-  currentCols = parseInt(colsSlider.value, 10);
-  touchedCols = true;
-  resetForNewShape();
-  setFeedback(
-    "Adjust rows and columns, then build the array and count.",
-    "neutral"
-  );
-  updateProblemDisplay();
-  renderGrid(currentRows, currentCols);
-  updateChecklist();
-});
 
 newProblemBtn.addEventListener("click", () => {
   randomProblem();
