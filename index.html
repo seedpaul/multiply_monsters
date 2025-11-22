@@ -18,10 +18,7 @@
         </div>
 
         <div class="score-panel">
-          <div class="monster-face" id="monster-face" aria-hidden="true">
-            🧡
-          </div>
-          <div class="score-text">
+<div class="score-text">
             <div>Correct: <span id="score-correct">0</span></div>
             <div>Streak: <span id="score-streak">0</span></div>
           </div>
@@ -66,11 +63,10 @@
             <div class="check-step" id="step-rows">1) Notice the rows</div>
             <div class="check-step" id="step-cols">2) Notice the columns</div>
             <div class="check-step" id="step-count">3) Count rows x columns</div>
-            <div class="check-step" id="step-answer">4) Enter the product</div>
           </div>
 
           <div class="answer-section">
-            <h3 class="answer-title">Type your answer</h3>
+            <h3 class="answer-title">Enter your answer</h3>
 
             <div class="answer-display">
               <span id="answer-value">?</span>
@@ -123,6 +119,8 @@
         <button id="feedback-ok" class="primary-btn">Got it</button>
       </div>
     </div>
+
+    <div id="celebration-layer" class="celebration-layer" aria-hidden="true"></div>
 
     <script type="module" src="app.js"></script>
   </body>
